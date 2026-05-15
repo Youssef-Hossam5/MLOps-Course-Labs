@@ -9,16 +9,17 @@ import pandas as pd
 from pathlib import Path
 from typing import Dict
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Path Configuration
 # ---------------------------------------------------------------------------
-# app/model_utils.py -> go up one level to project root
-PROJECT_ROOT = Path(__file__).parent.parent
-MODEL_PATH = PROJECT_ROOT / "data" / "model.pkl"
-TRANSFORMER_PATH = PROJECT_ROOT / "data" / "column_transformer.joblib"
+# Use environment variable with fallback for local development
+DATA_DIR = Path(os.getenv("DATA_DIR", Path(__file__).parent.parent / "data"))
+MODEL_PATH = DATA_DIR / "model.pkl"
+TRANSFORMER_PATH = DATA_DIR / "column_transformer.joblib"
 
 # ---------------------------------------------------------------------------
 # Model Loading with Error Handling
@@ -47,6 +48,7 @@ def load_model_and_transformer():
 
 # Load once at module level (happens when app starts)
 model, transformer = load_model_and_transformer()
+
 
 # ---------------------------------------------------------------------------
 # Prediction Function
