@@ -17,13 +17,13 @@ jobs:
           python-version: '3.12' 
 
       - name: Install Dependencies
-        run: pip install .
-
-      - name: Install Dev Dependencies
-        run: pip install pytest pytest-cov
+        run: |
+          pip install -e .
+          pip install pytest pytest-cov
 
       - name: Run Tests
-        run: pytest tests/ -v --cov=app --cov=main --cov-report=term-missing
+        run: python -m pytest tests/
+
 
       - name: Build Docker Image
         run: docker build -t churn-prediction-api:latest .
