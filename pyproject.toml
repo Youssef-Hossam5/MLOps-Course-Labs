@@ -15,6 +15,7 @@ dependencies = [
     "litestar[standard]>=2.0.0",
     "pydantic>=2.0.0",
     "scikit-learn==1.6.1",
+    "axiom-py>=0.10.0",
 ]
 
 [dependency-groups]
