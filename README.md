@@ -32,3 +32,8 @@ uv run pytest tests/ -v --cov=app --cov=main --cov-report=term-missing
 | GET    | `/`        | Welcome message          |
 | GET    | `/health`  | Health check             |
 | POST   | `/predict` | Returns churn prediction |
+
+
+
+
+![Axiom Dashboard](assets/axiomDB.png)

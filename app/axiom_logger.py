@@ -82,6 +82,30 @@ class AxiomLogger:
             "error": error
         })
 
+    def log_server_latency(self, response_time_ms, endpoint, request_id=None):
+        """Log detailed server-side latency metrics."""
+        self._send_event({
+            "event_type": "server_latency",
+            "request_id": request_id,
+            "response_time_ms": response_time_ms,
+            "endpoint": endpoint,
+            "latency_category": self._categorize_latency(response_time_ms),
+            "timestamp": datetime.utcnow().isoformat()
+        })
+    
+    def _categorize_latency(self, response_time_ms: float) -> str:
+        """Categorize response time into performance tiers."""
+        if response_time_ms < 100:
+            return "excellent"
+        elif response_time_ms < 250:
+            return "good"
+        elif response_time_ms < 500:
+            return "acceptable"
+        elif response_time_ms < 1000:
+            return "slow"
+        else:
+            return "very_slow"
+
     def log_error(self, message, error_type, endpoint, request_id=None):
         self._send_event({
             "event_type": "error",
@@ -91,6 +115,42 @@ class AxiomLogger:
             "endpoint": endpoint
         })
 
+    def log_model_confidence(self, prediction, confidence, request_id=None):
+        """Log model prediction confidence/probability metrics."""
+        self._send_event({
+            "event_type": "model_confidence",
+            "request_id": request_id,
+            "prediction": prediction,
+            "confidence": confidence,
+            "confidence_percentage": round(confidence * 100, 2) if confidence else None,
+            "confidence_level": self._categorize_confidence(confidence),
+            "timestamp": datetime.utcnow().isoformat()
+        })
+    
+    def _categorize_confidence(self, confidence: float) -> str:
+        """Categorize model confidence into levels."""
+        if confidence is None:
+            return "unknown"
+        elif confidence >= 0.9:
+            return "very_high"
+        elif confidence >= 0.75:
+            return "high"
+        elif confidence >= 0.6:
+            return "moderate"
+        elif confidence >= 0.5:
+            return "low"
+        else:
+            return "very_low"
+    
+    def log_invalid_input(self, endpoint: str, error_details: Any, request_id: str = None):
+        """Logs malformed or failing client payloads to Axiom."""
+        self._send_event({
+            "event_type": "invalid_input_attempt",
+            "request_id": request_id,
+            "endpoint": endpoint,
+            "error_details": error_details,
+            "status_code": 400
+        }) 
 
 _axiom_logger = None
 

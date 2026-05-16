@@ -75,6 +75,42 @@ def predict_churn(features: Dict) -> int:
         logger.error(f"Prediction failed: {str(e)}")
         raise
 
+
+def predict_churn_with_confidence(features: Dict) -> tuple:
+    """
+    Predict churn with confidence score.
+    
+    Returns:
+        Tuple of (prediction: int, confidence: float)
+        Confidence is probability of predicted class (0-1)
+    """
+    try:
+        df = pd.DataFrame([features])
+        
+        # Transform features
+        X = transformer.transform(df)
+        
+        # Convert back to DataFrame with feature names (suppresses warning)
+        if hasattr(transformer, 'get_feature_names_out'):
+            feature_names = transformer.get_feature_names_out()
+            X = pd.DataFrame(X, columns=feature_names)
+        
+        # Get prediction
+        prediction = model.predict(X)[0]
+        
+        # Get confidence if model supports predict_proba
+        confidence = None
+        if hasattr(model, 'predict_proba'):
+            proba = model.predict_proba(X)[0]
+            # Confidence of predicted class
+            confidence = float(proba[int(prediction)])
+        
+        return int(prediction), confidence
+    
+    except Exception as e:
+        logger.error(f"Prediction with confidence failed: {str(e)}")
+        raise
+
 # ---------------------------------------------------------------------------
 # Testing
 # ---------------------------------------------------------------------------
